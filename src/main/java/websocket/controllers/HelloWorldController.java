@@ -11,7 +11,7 @@ public class HelloWorldController {
 
     @RequestMapping(method=RequestMethod.GET)
     public String get (@RequestParam String name) {
-        return "Hola " + name; 
+        return "Hola, " + name; 
     }
     
 }
