@@ -26,6 +26,21 @@ public class ChatController {
             this.text = "Hola " + text;
             this.time = GregorianCalendar.getInstance().getTimeInMillis();
         }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public Long getTime() {
+            return time;
+        }
+
+        public void setTime(Long time) {
+            this.time = time;
+        }
     }
-    
 }
