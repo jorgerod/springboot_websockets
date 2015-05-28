@@ -1,46 +1,24 @@
 package websocket.controllers;
 
-import java.util.GregorianCalendar;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
+import websocket.model.Message;
+import websocket.services.IMessageService;
 
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
+    
+    
+    @Autowired
+    public IMessageService messageService = null;
 
     @RequestMapping(method=RequestMethod.GET)
-    public String get (@RequestParam String text) {
-        return new Gson().toJson(new Message(text)); 
-    }
-    
-    class Message {
-        private String text = null;
-        private Long time = null;
-        
-        public Message (String text) {
-            this.text = "Hola " + text;
-            this.time = GregorianCalendar.getInstance().getTimeInMillis();
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public Long getTime() {
-            return time;
-        }
-
-        public void setTime(Long time) {
-            this.time = time;
-        }
+    public void get (Message message) {
+        messageService.sendMessage(new Message(message));
     }
 }
