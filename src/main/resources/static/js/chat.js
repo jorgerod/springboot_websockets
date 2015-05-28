@@ -2,25 +2,50 @@
 
 angular.module("ChatApp", [])
 	.controller("ChatController", ['$scope', '$http',  function ($scope, $http) {
-		$scope.text = "";
+		$scope.isLogin = false;
+		$scope.message = "";
+		$scope.mail = "";
 		//$scope.result = "fff";
-		$scope.zzz = "";
+		$scope.conversation = "";
 		var stompClient = null;
 		
+		
+		$scope.login = function () {
+			if ($scope.mail && $scope.mail.length > 0) {
+				$http({
+					method: 'GET',
+					url: '/chat/login',
+					params: {mail: $scope.mail}
+				}).success(function (response) {
+					$scope.isLogin = response;
+				}).error(function (response) {
+					alert("Error: " + response);
+				});
+			}
+		};
+		
+		/**funcion invocada desde el boton enviar del formulario. Envia el mensaje
+		 * al servidor y este lo envia a los clientes que se hayan subscrito*/
 		$scope.send  = function() {
-	        $http({
-	            method : 'GET',
-	            url : '/chat',
-	            params : {text: $scope.text, mail: "zzz@mail.com"}
+			if ($scope.message && $scope.message.length > 0) {
+				$http({
+		            method: 'GET',
+		            url: '/chat/send',
+		            params: {text: $scope.message, mail: $scope.mail}
 
-	        }).success(function (data) {
-			    $scope.result = data.text;
+		        }).success(function (response) {
+		        	$scope.message = "";
 
-			}).error(function (data) {
-			    $scope.result = "Houston, tenemos un problema"
-			});
+				}).error(function (response) {
+					alert("Error: " + response);
+				});
+			}	
 	    };
 	    
+	    
+	    /**Me subscribo a los n canales que me interen.
+	     * @rcvMessage: funcion que se ejecutara cuando me llegue un mensaje por el canal
+	     * 				al que me haya subscrito*/
 	    $scope.connect = function(rcvMessage, rcvEvent, email) {
 	           var socket = new SockJS('/message');
 	           stompClient = Stomp.over(socket);
@@ -33,10 +58,10 @@ angular.module("ChatApp", [])
 	           });
 	    };
 	    
-	    
+	    /** Guarda en la variable los mensajes que me van llegando desde el servidor */
 	    function receiveMessage (message) {
             var jsonMsg = JSON.parse(message.body);
-            $scope.zzz += "<br/>" + jsonMsg.text + " " + jsonMsg.time;
+            $scope.conversation += jsonMsg.mail + " dice:\n\t" + jsonMsg.text + "\n";
         } 
 	    
 	    var init = false;
