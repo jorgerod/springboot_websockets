@@ -14,7 +14,7 @@ public class MessageService implements IMessageService {
     
     @Override
     public void sendMessage(Message message) {
-        messagingTemplate.convertAndSend("/topic/chat".toString(), message);
+        messagingTemplate.convertAndSend("/topic/messageactivity", message);
     }
 
 }

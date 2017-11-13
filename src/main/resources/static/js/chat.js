@@ -1,81 +1,52 @@
 "use strict"
 
-angular.module("ChatApp", [])
-	.controller("ChatController", ['$scope', '$http',  function ($scope, $http) {
-		$scope.isLogin = false;
+angular.module("MessageActivityApp", ['ngSanitize'])
+	.controller("MessageActivityController", ['$scope', '$http', '$sce', function ($scope, $http, $sce) {
 		$scope.message = "";
-		$scope.mail = "";
-		//$scope.result = "fff";
-		$scope.conversation = "";
+		$scope.text = "";
+		$scope.type = "";//inicializo a tokenmanager
+		$scope.time = undefined;
+		
 		var stompClient = null;
-		
-		
-		$scope.login = function () {
-			if ($scope.mail && $scope.mail.length > 0) {
-				$http({
-					method: 'GET',
-					url: '/chat/login',
-					params: {mail: $scope.mail}
-				}).success(function (response) {
-					$scope.isLogin = response;
-				}).error(function (response) {
-					alert("Error: " + response);
-				});
-			}
-		};
-		
-		/**funcion invocada desde el boton enviar del formulario. Envia el mensaje
-		 * al servidor y este lo envia a los clientes que se hayan subscrito*/
-		$scope.send  = function() {
-			if ($scope.message && $scope.message.length > 0) {
-				$http({
-		            method: 'GET',
-		            url: '/chat/send',
-		            params: {text: $scope.message, mail: $scope.mail}
-
-		        }).success(function (response) {
-		        	$scope.message = "";
-
-				}).error(function (response) {
-					alert("Error: " + response);
-				});
-			}	
-	    };
+		var types = {"0": "TOKENMANAGER",
+					 "1": "WALLET",
+					 "2": "CMS",
+					 "3": "CANALES",
+					 "4": "TSP",
+					 "5": "SWITCH"};
 	    
-	    
-	    /**Me subscribo a los n canales que me interen.
-	     * @rcvMessage: funcion que se ejecutara cuando me llegue un mensaje por el canal
+	    /**Me subscribo a los n canales que me interesen.
+	     * @rcvMessage: funcion que se ejecutara cuando me llegue un mensaje [] el canal
 	     * 				al que me haya subscrito*/
 	    $scope.connect = function(rcvMessage, rcvEvent, email) {
 	           var socket = new SockJS('/message');
 	           stompClient = Stomp.over(socket);
 	           stompClient.connect({'X-Email':email}, function(frame) {
 	               console.log('Connected: ' + frame);
-	               stompClient.subscribe('/topic/chat', rcvMessage, {});
-//	               stompClient.subscribe('/topic/events', rcvEvent, {});
+	               stompClient.subscribe('/topic/messageactivity', rcvMessage, {});
 	           }, function(error){
 	                alert(error.headers.message);
 	           });
 	    };
 	    
+	    $scope.clean = function () {
+	    	$scope.text = "";
+	    }
+	    
 	    /** Guarda en la variable los mensajes que me van llegando desde el servidor */
 	    function receiveMessage (message) {
+	    	$scope.message = "";
             var jsonMsg = JSON.parse(message.body);
-            $scope.conversation += jsonMsg.mail + " dice:\n\t" + jsonMsg.text + "\n";
+            $scope.text += $sce.trustAsHtml("<p class='lineShell_" + jsonMsg.type + "'>" + "   $ " + jsonMsg.time + " " + types[jsonMsg.type] + ">  " + jsonMsg.text + "</p>");
+            $scope.type = jsonMsg.type;
+            
+            //pongo el scroll en la ultima linea
+            var shell = document.getElementById("shell");
+            shell.scrollTop = shell.scrollHeight;
+            $scope.$apply()
         } 
 	    
 	    var init = false;
-		init = !init && $scope.connect(receiveMessage, undefined, "caca@ddd.com");
-	    
-	    /********* SOCKET************************/
-	 // Listening to an event
-//        socket.on('someEvent', function(data) {
-//            $scope.data = data;
-//        });
-	  //Open a WebSocket connection
-//	    var ws = ngSocket('ws://foo/bar');
-//
-//	    //Can call before socket has opened
-//	    ws.send({foo: 'bar'});
+		init = !init && $scope.connect(receiveMessage, undefined, "TokenManager_MessageActivity");
 	}
 ]);

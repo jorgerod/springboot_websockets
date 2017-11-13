@@ -1,0 +1,33 @@
+.shell {
+	background-color: black;
+	height: 30em;
+	max-height:30em;
+	overflow:auto;
+	width: 70em;
+	font-size: 13px;
+	padding: 5px 5px 5px 5px;
+}
+
+.lineShell_0 {
+	color: white;
+}
+
+.lineShell_1 {
+    color: green;
+}
+
+.lineShell_2 {
+    color: red;
+}
+
+.lineShell_3 {
+    color: purple;
+}
+
+.lineShell_4 {
+    color: yellow;
+}
+
+.lineShell_5 {
+    color: blue;
+}

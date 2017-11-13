@@ -1,24 +1,25 @@
 package websocket.model;
 
-import java.util.GregorianCalendar;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Message {
-    private String mail = null;
+    private String type = null;
     private String text = null;
-    private Long time = null;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private Date time = new Date();
     
     public Message (){}
     
-    public Message (String text, String mail) {
+    public Message (String text, String type) {
         this.text = text;
-        this.mail = mail;
-        this.time = GregorianCalendar.getInstance().getTimeInMillis();
+        this.type = type;
     }
 
     public Message(Message message) {
         this.text = message.getText();
-        this.mail = message.getMail();
-        this.time = GregorianCalendar.getInstance().getTimeInMillis();
+        this.type = message.getType();
     }
 
     public String getText() {
@@ -29,19 +30,19 @@ public class Message {
         this.text = text;
     }
 
-    public Long getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(Long time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
-    public String getMail() {
-        return mail;
+    public String getType() {
+        return type;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setType(String type) {
+        this.type = type;
     }
 }

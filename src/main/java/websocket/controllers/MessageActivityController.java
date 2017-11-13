@@ -9,8 +9,8 @@ import websocket.model.Message;
 import websocket.services.IMessageService;
 
 @RestController
-@RequestMapping("/chat")
-public class ChatController {
+@RequestMapping("/messageactivity")
+public class MessageActivityController {
     
     
     @Autowired
@@ -19,10 +19,5 @@ public class ChatController {
     @RequestMapping(method=RequestMethod.GET, value="/send")
     public void send (Message message) {
         messageService.sendMessage(new Message(message));
-    }
-    
-    @RequestMapping(method=RequestMethod.GET, value="/login")
-    public Boolean login (String mail) {
-        return true;
     }
 }
